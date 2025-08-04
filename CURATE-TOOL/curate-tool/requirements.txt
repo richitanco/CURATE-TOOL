@@ -1,0 +1,14 @@
+crewai
+crewai-tools
+langchain
+langchain-openai
+langchain-google-genai
+openai
+google-generativeai
+python-dotenv
+requests
+beautifulsoup4
+lxml
+click
+pandas
+setuptools
