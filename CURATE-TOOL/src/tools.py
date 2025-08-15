@@ -174,32 +174,55 @@ Score: {score}/100
 # Intentar usar las herramientas nativas de CrewAI
 try:
     from crewai_tools import BaseTool
+    from pydantic import BaseModel, Field
+    from typing import Type
+    
+    class WebSearchInput(BaseModel):
+        """Input schema for WebSearchTool."""
+        query: str = Field(..., description="Search query string")
     
     # Crear clases personalizadas que hereden de BaseTool
     class WebSearchTool(BaseTool):
         name: str = "web_search"
-        description: str = "Search for information on the web"
+        description: str = "Search for information on the web using Serper API. Returns real URLs and content from search results."
+        args_schema: Type[BaseModel] = WebSearchInput
         
         def _run(self, query: str) -> str:
             return search_web(query)
     
+    class GeminiAnalysisInput(BaseModel):
+        """Input schema for GeminiAnalysisTool."""
+        prompt: str = Field(..., description="Analysis prompt")
+        context: str = Field(default="", description="Additional context")
+    
     class GeminiAnalysisTool(BaseTool):
         name: str = "gemini_analysis"
         description: str = "Perform deep analysis using Gemini AI"
+        args_schema: Type[BaseModel] = GeminiAnalysisInput
         
         def _run(self, prompt: str, context: str = "") -> str:
             return analyze_with_gemini(prompt, context)
     
+    class WebScrapeInput(BaseModel):
+        """Input schema for WebScrapeTool."""
+        url: str = Field(..., description="URL to scrape")
+    
     class WebScrapeTool(BaseTool):
         name: str = "webpage_scraper"
         description: str = "Extract content from webpages"
+        args_schema: Type[BaseModel] = WebScrapeInput
         
         def _run(self, url: str) -> str:
             return scrape_webpage(url)
     
+    class QualityInput(BaseModel):
+        """Input schema for QualityTool."""
+        content: str = Field(..., description="Content to evaluate")
+    
     class QualityTool(BaseTool):
         name: str = "quality_evaluator"
         description: str = "Evaluate content quality"
+        args_schema: Type[BaseModel] = QualityInput
         
         def _run(self, content: str) -> str:
             return evaluate_content_quality(content)
